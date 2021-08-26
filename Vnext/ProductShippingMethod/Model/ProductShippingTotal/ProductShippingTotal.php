@@ -32,7 +32,10 @@ class ProductShippingTotal extends \Magento\Quote\Model\Quote\Address\Total\Abst
         $price = 0;
         foreach ($quoteItems as $item ){
             $product = $item->getProduct();
-            $price += $item->getProduct()->getCustomAttribute('shipping_fee')->getValue();
+            $attr = $item->getProduct()->getCustomAttribute('shipping_fee');
+            if ($attr && $attr->getValue()) {
+                $price += $attr->getValue();
+            }
         }
         $total->setGrandTotal($total->getGrandTotal() + $price);
 
@@ -60,7 +63,10 @@ class ProductShippingTotal extends \Magento\Quote\Model\Quote\Address\Total\Abst
         $total = 0;
         foreach ($quoteItems as $item ){
             $product = $item->getProduct();
-            $total += $item->getProduct()->getCustomAttribute('shipping_fee')->getValue();
+            $attr = $item->getProduct()->getCustomAttribute('shipping_fee');
+            if ($attr && $attr->getValue()) {
+                $total += $attr->getValue();
+            }
         }
         return [
             'code' => 'shipping-total',

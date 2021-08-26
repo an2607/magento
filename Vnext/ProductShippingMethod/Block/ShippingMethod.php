@@ -70,53 +70,15 @@ class ShippingMethod extends \Magento\Framework\View\Element\Template
         return $this->_product;
     }
 
-    /**
-     * $excludeAttr is optional array of attribute codes to exclude them from additional data array
-     *
-     * @param array $excludeAttr
-     * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function getAdditionalData(array $excludeAttr = [])
+
+    public function getAdditionalDataFeeMethod()
     {
-        $data = [];
-        $product = $this->getProduct();
-        $attributes = $product->getAttributes();
-        foreach ($attributes as $attribute) {
-            if ($this->isVisibleOnFrontend($attribute, $excludeAttr)) {
-                $value = $attribute->getFrontend()->getValue($product);
+        return $this->getProduct()->getData('shipping_method');
+    }
+    public function getAdditionalDataShipFee()
+    {
+        return $this->getProduct()->getData('shipping_fee');
 
-                if ($value instanceof Phrase) {
-                    $value = (string)$value;
-                } elseif ($attribute->getFrontendInput() == 'price' && is_string($value)) {
-                    $value = $this->priceCurrency->convertAndFormat($value);
-                }
-
-                if (is_string($value) && strlen(trim($value))) {
-                    $data[$attribute->getAttributeCode()] = [
-                        'label' => $attribute->getStoreLabel(),
-                        'value' => $value,
-                        'code' => $attribute->getAttributeCode(),
-                    ];
-                }
-            }
-        }
-
-        return $data;
     }
 
-    /**
-     * Determine if we should display the attribute on the front-end
-     *
-     * @param \Magento\Eav\Model\Entity\Attribute\AbstractAttribute $attribute
-     * @param array $excludeAttr
-     * @return bool
-     * @since 103.0.0
-     */
-    protected function isVisibleOnFrontend(
-        \Magento\Eav\Model\Entity\Attribute\AbstractAttribute $attribute,
-        array $excludeAttr
-    ) {
-        return ($attribute->getIsVisibleOnFront() && !in_array($attribute->getAttributeCode(), $excludeAttr));
-    }
 }
